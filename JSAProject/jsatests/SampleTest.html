@@ -1,0 +1,120 @@
+<!--
+JSAutomate Sample Test Script
+Copyright (c) JSAutomate Incorporated
+All Rights Reserved.
+https://www.jsautomate.com
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>JSAutomate Test Script</title>
+<meta charset="utf-8" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://www.jsautomate.com/scripts/jsa-controller-2.0.3-min.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light%7CPlayfair+Display:400" rel="stylesheet" type="text/css">
+
+<!--  Your custom javascript actions go here such as customactions.js-->
+
+<body>
+<div style="width:100%;height:75px;background:linear-gradient(90deg,rgba(2,0,36,1)0%,rgba(7,47,94,1)0%,rgba(26,164,219,1)96%);
+vertical-align:middle;line-height:40px;">
+<span style="font-family: 'Shadows Into Light', cursive; color:white; font-size: 34px; font-weight: 700;float:left
+;padding-left:20px;padding-top:20px">JSAutomate</span>
+<span id="test-run-time" style="font-family: arial,sans-serif; color:white; font-size: 14px; font-weight: bold;
+float:right;padding-right:20px;;padding-top:20px">Test Run Log:</span>
+<script>var currTime = _l();$("#test-run-time").text("Test Run Log:  " + new Date(Date.now()).toLocaleString());
+</script>
+</div>
+<div id="log-output" style="font-family:'Courier New',Courier,monospace;font-size:12px;color:black;display:block;
+padding-top:5px;word-break:break-all;word-wrap:break-word;">
+</div>
+
+<script>
+
+"use strict";
+
+$(document).ready(function () {
+
+    async function SampleTest() {
+        try {
+            logInfo("Sample Test");
+
+            // open main automation window
+            await openAutoWindow("https://www.google.com");
+
+            // make sure page is fully loaded and get response time
+            await checkWindowLoadState();
+
+            let exists = await elementExists("input", "name", "q");
+            if (exists === true) {
+                // type keys JSAutomate
+                await typeKeys("input", "name", "q", "JSAutomate");
+            }
+
+            // element count
+            let eCount =  await elementCount("input", "name", "btnK");
+            if (eCount > 1) {
+                // click element
+                await click("input", "name", "btnK", ["INDEX=0", "SEARCH=CONTAINS"]);
+            }
+
+            // change to new website
+            await changeUrl("https://www.jsautomate.com/index.html");
+
+            // make sure page is fully loaded and get response time
+            await checkWindowLoadState();
+
+            // verify text contains
+            await verifyTextContains("div", "id", "dynamic-footer", "JSAutomate Inc.");
+
+            await sleepWithMsg(3000, "Sample Test");
+            logInfo("Test Completed");
+            logInfo("*** TEST PASSED ***");
+
+            //loading json global data
+            //let jsonData = await loadJSON("http://localhost:5000/SampleJSON.json");
+            //logInfo("jsonData.name: " + jsonData.name);
+
+            // sending JSON email alert sample (see docs - send email alerts)
+            //var obj = {status:"FAILED", message:"Element failed for div", timestamp:"6:28PM"};
+            //var postResult = await sendJSON("http://localhost:5000/SendAlert", JSON.stringify(obj));
+            //logInfo("postResult: " + postResult.status);
+        }
+        catch (error) {
+            try {
+                logError("*** TEST FAILED ***");
+
+                // save log file on errors
+                await saveLogToFile("sample_test_log");
+
+                // get log file as string
+                let logSummary = getLogSummary();
+                logInfo("getLogSummary = " + logSummary.substring(0, 10) + "...");
+
+                // save screenshots on errors
+                await captureElementToFile("captureElementToFile", "body");
+            }
+            catch (error) {
+                logError(error);
+            }
+        }
+        finally {
+            // close auto window
+            await closeAutoWindow();
+
+            // sleep 3 seconds
+            await sleep(3000);
+            logInfo("Exiting Test");
+        }
+    }
+
+    // start the test
+    SampleTest();
+
+});
+
+</script>
+</body>
+</html>
